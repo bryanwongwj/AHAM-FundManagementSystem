@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: production
+      PG_USER: ${PG_USER}
+      PG_PASS: ${PG_PASS}
+      PG_NAME: ${PG_NAME}
+      PG_HOST: ${PG_HOST}
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_DB: ${PG_NAME}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
